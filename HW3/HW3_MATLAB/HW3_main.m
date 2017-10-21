@@ -21,6 +21,8 @@ figure,
 subplot(1,2,1), subimage(input_img_gray);
 title('original image (gray scale)')
 
+
+
 %% %%%%%%%%%%%%%%%% PART 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Generate noisy input image
 s = 20; %standard deviation of artificial noise
