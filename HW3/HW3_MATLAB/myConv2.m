@@ -15,31 +15,45 @@ if strcmp(padding_method,'repeating')
     left = long(:,end-filterHeight:end);
     right = long(:,1:filterHeight);
     padded_input_image = [left long right];
+    
 elseif strcmp(padding_method,'mirroring')
     % your code to implement padding using 'mirroring' method
-    long = [input_image(m_mask:-1:1,:) ; input_image ; input_image(end:-1:end-m_mask,:)];
-    left = long(:,m_mask:-1:1);
-    right = long(:,end-m_mask:end);
+    long = [input_image(filterHeight:-1:1,:) ; input_image ; input_image(end:-1:end-filterHeight,:)];
+    left = long(:,filterHeight:-1:1);
+    right = long(:,end-filterHeight:end);
     padded_input_image = [left long right];
+    
 else 
     % default zero-padding
-    long = [zeros(m_mask,n) ; input_image ; zeros(m_mask,n)];
+    long = [zeros(filterHeight,n) ; input_image ; zeros(filterHeight,n)];
     [p q] = size(long);
-    side = zeros(p,m_mask);
+    side = zeros(p,filterHeight);
     padded_input_image = [side long side];
 end
 
 %% perform convolution operation using the padded_input_image and myfilter to get the output_img
-output_img = padded_input_image;
 [paddedHeight, paddedWidth] = size(padded_input_image);
 
-for i = filterHeight : paddedHeight - filterHeight
-    for j = filterWidth : paddedWidth - filterWidth
-        % make sure filter doesn't start from edge
-        output_img(i,j) = padded_input_image(i,j) * myfilter;
+% define fiter zone, make sure filter doesn't start from edge
+startHeight = filterHeight;
+startWidth = filterWidth;
+endHeight = paddedHeight - filterHeight;
+endWidth = paddedWidth - filterWidth;
+
+output_img = padded_input_image;
+
+for i = startHeight : endHeight
+    for j = startWidth : endWidth
+        % i and j are location on the padded image
+        sum = 0;
+        % temprary variable used for store the value of i,j
+        for p = -floor(filterHeight/2) : floor(filterHeight/2)
+            for q = -floor(filterWidth/2) : floor(filterWidth/2)
+                sum = sum + myfilter(floor(filterHeight/2) + p +1 , floor(filterWidth/2) + q +1) * padded_input_image(i + p, j + q);
+            end
+        end
+        output_img(i,j) = sum;
     end
 end
 
-%(filterSizeM:end-filterSizeM,filterSizeN:end-filterSizeN));
-
-
+output_img = output_img(startHeight+1:endHeight, startWidth+1:endWidth);

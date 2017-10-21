@@ -29,14 +29,27 @@ filter = filter / sum(filter(:));
 
 %% Conv2
 [filterHeight, filterWidth] = size(filter);
-padded_input_image = im2double(padded_input_image);
-output_img = padded_input_image;
-
 [paddedHeight, paddedWidth] = size(padded_input_image);
 
-for i = filterHeight : paddedHeight - filterHeight
-    for j = filterWidth : paddedWidth - filterWidth
-        % make sure filter doesn't start from edge
-        output_img(i,j) = padded_input_image(i - filterHeight, j - filterWidth) * filter;
+% define fiter zone, make sure filter doesn't start from edge
+startHeight = filterHeight;
+startWidth = filterWidth;
+endHeight = paddedHeight - filterHeight;
+endWidth = paddedWidth - filterWidth;
+
+output_img = padded_input_image;
+
+for i = startHeight : endHeight
+    for j = startWidth : endWidth
+        sum = 0;
+        for p = -floor(filterHeight/2) : floor(filterHeight/2)
+            for q = -floor(filterWidth/2) : floor(filterWidth/2)
+                sum = sum + filter(floor(filterHeight/2) + 1 + p , floor(filterWidth/2) + 1 + q) * padded_input_image(i+p, j+q);
+            end
+        end
+        output_img(i,j) = sum;
     end
 end
+
+figure
+imshow(output_img);
