@@ -1,39 +1,38 @@
-clc,clf,close all,clear all;
-I=imread('Leopard.jpg');
-subplot(2,2,1),imshow(I),title('original image');
+clear all;
+close all;
+clc;
 
-H1=[1 4 7 4 1;4 16 26 16 4;7 26 47 26 7;4 16 26 16 4; 1 4 7 4 1]/273.0;
+img=imread('lena.jpg');
+img=mat2gray(img);
+[m n]=size(img);
+imshow(img);
 
-[r,c]=size(I);
-[r1,c1]=size(H1);
-Pzone=zeros(r+r1-1,c+c1-1);
-m_start=floor(r1/2)+1;%???
-c_start=floor(c1/2)+1;%???
-m_end=r+r1-floor(r1/2)-1;%???
-c_end=c+c1-floor(c1/2)-1;%???
+r=10;        %模板半径
+imgn=zeros(m+2*r+1,n+2*r+1);
+imgn(r+1:m+r,r+1:n+r)=img;
+imgn(1:r,r+1:n+r)=img(1:r,1:n);                 %扩展上边界
+imgn(1:m+r,n+r+1:n+2*r+1)=imgn(1:m+r,n:n+r);    %扩展右边界
+imgn(m+r+1:m+2*r+1,r+1:n+2*r+1)=imgn(m:m+r,r+1:n+2*r+1);    %扩展下边界
+imgn(1:m+2*r+1,1:r)=imgn(1:m+2*r+1,r+1:2*r);       %扩展左边界
 
-Pzone(m_start:m_end,c_start:c_end)=double(I);
-%Z1=zeros(r+r1-1,c+c1-1);%???????Z1
+sigma_d=2;
+sigma_r=0.1;
+[x,y] = meshgrid(-r:r,-r:r);
+w1=exp(-(x.^2+y.^2)/(2*sigma_d^2));     %以距离作为自变量高斯滤波器
 
-  for i=m_start:m_end
-        for j=c_start:c_end
-        sumz=0;
-        for p=-floor(r1/2):floor(r1/2)
-            for q=-floor(c1/2):floor(c1/2)
-                sumz=sumz+H1(floor(r1/2)+1+p,floor(c1/2)+1+q).*Pzone(i+p,j+q);
-            end
-        end
-        Z1(i,j)=sumz;
-        end
- end
-P1=mat2gray(Z1(m_start:m_end,c_start:c_end));
+h=waitbar(0,'wait...');
+for i=r+1:m+r
+    for j=r+1:n+r        
+        w2=exp(-(imgn(i-r:i+r,j-r:j+r)-imgn(i,j)).^2/(2*sigma_r^2)); %以周围和当前像素灰度差值作为自变量的高斯滤波器
+        w=w1.*w2;
+        
+        s=imgn(i-r:i+r,j-r:j+r).*w;
+        imgn(i,j)=sum(sum(s))/sum(sum(w));
+    
+    end
+    waitbar(i/m);
+end
+close(h)
 
- mask=Pzone(m_start:m_end,c_start:c_end)-Z1(m_start:m_end,c_start:c_end);
- P2=mat2gray(mask);
- image=Pzone(m_start:m_end,c_start:c_end)-mask;
- %??mask?Pzone?Z1?m_start:m_end,c_start:c_end???????????floor(r1)/2?
- P3=mat2gray(image);
- 
-  subplot(2,2,2),imshow(P1);title('smoothing image');
-  subplot(2,2,3),imshow(P2);title('unsharp mask');
-  subplot(2,2,4),imshow(P3);title('unsharp masking image');
+figure;
+imshow(mat2gray(imgn(r+1:m+r,r+1:n+r)));

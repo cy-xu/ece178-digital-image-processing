@@ -49,17 +49,15 @@ for method = 1:3 % generate results using different padding method
 end
 
 %% Denoising using bilateral filtering
-w = 20;
-sigma_d = [3, 10];
-sigma_r = [30, 100];
+w = 20; % window size for bilateral filter
+sigma_d = [3, 10]; % spatial standard deviation for bilateral filter
+sigma_r = [30, 100]; % range standar deviation for bilateral filter
 
 BilateralDenoisedImgs = cell(2,1);
 BilateralDenoisedImgs{1,1} = uint8(myBilateralFilter(noisy_img,w,sigma_d(1),sigma_r(1)));
 BilateralDenoisedImgs{2,1} = uint8(myBilateralFilter(noisy_img,w,sigma_d(2),sigma_r(2)));
 
 display2images(BilateralDenoisedImgs(:,1),'bilateral filter')
-
-
 
 %% %%%%%%%%%%%%%%%% PART 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% DCT Transform
