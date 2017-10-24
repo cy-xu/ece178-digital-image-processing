@@ -17,3 +17,11 @@ end
 filter = filter / sum(filter(:));
 
 %% try meshgrid as your second solution
+% 
+% h2 = fix(height/2);
+% w2 = fix(width/2);
+% 
+% [x,y] = meshgrid(-h2:h2, -w2:w2);
+% filter = exp(-(x.^2 + y.^2)/(2 * sigma^2));
+% filter = filter / sum(filter(:));
+

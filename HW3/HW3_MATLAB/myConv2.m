@@ -49,7 +49,8 @@ for i = startHeight : endHeight
         % temprary variable used for store the value of i,j
         for p = -floor(mf/2) : floor(mf/2)
             for q = -floor(nf/2) : floor(nf/2)
-                sum = sum + myfilter(floor(mf/2) + p +1 , floor(nf/2) + q +1) * padded_input_image(i + p, j + q);
+                % p & q move around inside the filter mask
+                sum = sum + myfilter(floor(mf/2) +p +1 , floor(nf/2) +q +1) * padded_input_image(i + p, j + q);
             end
         end
         output_img(i,j) = sum;

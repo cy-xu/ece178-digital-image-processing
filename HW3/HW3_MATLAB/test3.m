@@ -1,38 +1,51 @@
+%function outImage = myBilateralFilter(A,w,sigma_d,sigma_r)
+% A        : noisy input image (type: double)
+% w        : window size for bilateral filter
+% sigma_s  : spatial standard deviation for bilateral filter
+% sigma_r  : range standar deviation for bilateral filter
+% outImage : bilateral filtered output image (type: double)
+
+%% implement bilateral filter here
 clear all;
 close all;
 clc;
 
-img=imread('lena.jpg');
-img=mat2gray(img);
-[m n]=size(img);
-imshow(img);
+A=imread('Leopard.jpg');
+A=rgb2gray(A);
 
-r=10;        %模板半径
-imgn=zeros(m+2*r+1,n+2*r+1);
-imgn(r+1:m+r,r+1:n+r)=img;
-imgn(1:r,r+1:n+r)=img(1:r,1:n);                 %扩展上边界
-imgn(1:m+r,n+r+1:n+2*r+1)=imgn(1:m+r,n:n+r);    %扩展右边界
-imgn(m+r+1:m+2*r+1,r+1:n+2*r+1)=imgn(m:m+r,r+1:n+2*r+1);    %扩展下边界
-imgn(1:m+2*r+1,1:r)=imgn(1:m+2*r+1,r+1:2*r);       %扩展左边界
+[m,n]=size(A);
+figure
+imshow(A);
+w = 20; % filter window size
+r = w/2;  % radius of the fliter
 
-sigma_d=2;
-sigma_r=0.1;
+%% zero padding
+long = [zeros(r,n) ; A ; zeros(r,n)];
+[mm, nn] = size(long);
+side = zeros(mm, r);
+An = [side long side];
+figure
+imshow(An)
+An=double(An);
+%% 
+sigma_d = 3;
+sigma_r = 30;
 [x,y] = meshgrid(-r:r,-r:r);
-w1=exp(-(x.^2+y.^2)/(2*sigma_d^2));     %以距离作为自变量高斯滤波器
+wd = exp(-(x.^2 + y.^2)/(2 * sigma_d^2)); % gaussian filter based on distance
+% x^2 + y^2 is the distance to center
 
-h=waitbar(0,'wait...');
-for i=r+1:m+r
-    for j=r+1:n+r        
-        w2=exp(-(imgn(i-r:i+r,j-r:j+r)-imgn(i,j)).^2/(2*sigma_r^2)); %以周围和当前像素灰度差值作为自变量的高斯滤波器
-        w=w1.*w2;
+A_filtered = zeros(size(An));
+for i = r+1 : m+r
+    for j = r+1 : n+r
+        wr = exp(-((An(i-r:i+r,j-r:j+r) - An(i,j)).^2 / (2 * sigma_r^2)));
+        % gaussian filter based on range of sorrunding pixels
+        w = wd .* wr;
         
-        s=imgn(i-r:i+r,j-r:j+r).*w;
-        imgn(i,j)=sum(sum(s))/sum(sum(w));
-    
+        s = An(i-r:i+r, j-r:j+r) .* w;
+        A_filtered(i,j) = sum(s(:)) / sum(w(:));
     end
-    waitbar(i/m);
 end
-close(h)
 
+A_filtered=uint8(A_filtered);
 figure;
-imshow(mat2gray(imgn(r+1:m+r,r+1:n+r)));
+imshow(A_filtered(r+1:m+r , r+1:n+r));
