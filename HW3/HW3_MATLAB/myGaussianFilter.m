@@ -6,5 +6,21 @@ function filter = myGaussianFilter(height,width,mu,sigma)
 % filter   : output filter kernel matrix of type double
 
 %% implement your Gaussian filter here
+filter = ones(height, width);
 
-% test git control
+for i = -fix(height/2) : 1 : fix(height/2)
+    for j = -fix(width/2) : 1 : fix(width/2)
+        filter(i + ceil(height/2),j + ceil(width/2)) = exp(-(i^2 + j^2)/(2 * sigma^2)); % +ceil(height/2) because matrix start from 1
+    end
+end
+
+filter = filter / sum(filter(:));
+
+%% try meshgrid as your second solution
+% 
+% h2 = fix(height/2);
+% w2 = fix(width/2);
+% 
+% [x,y] = meshgrid(-h2:h2, -w2:w2);
+% filter = exp(-(x.^2 + y.^2)/(2 * sigma^2));
+% filter = filter / sum(filter(:));
