@@ -24,4 +24,3 @@ filter = filter / sum(filter(:));
 % [x,y] = meshgrid(-h2:h2, -w2:w2);
 % filter = exp(-(x.^2 + y.^2)/(2 * sigma^2));
 % filter = filter / sum(filter(:));
-
