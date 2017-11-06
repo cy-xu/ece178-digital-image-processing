@@ -3,9 +3,11 @@ function [B] = gen_fourier_basis(input_img,p,q)
 
 [M,N] = size(input_img);
 
+B = 0;
+
 for n1 = 0:M-1
     for n2 = 0:N-1
-        B = exp(j*2*pi*((p*n1/M)+(q*n2/N)));
+        B = B + input_img(n1,n2) * exp(j*2*pi*((p*n1/M)+(q*n2/N)));
     end
 end
 

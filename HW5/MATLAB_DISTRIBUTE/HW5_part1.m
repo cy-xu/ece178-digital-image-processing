@@ -25,7 +25,7 @@ conv_res_1 = spatial_conv(double(input_img), conv_kernel);
 figure
 imshow(uint8(conv_res_1));
 
-% Frequency convolution
+%% Frequency convolution
 conv_res_2 = frequency_conv(double(input_img), conv_kernel);
 figure
 imshow(uint8(conv_res_2));
