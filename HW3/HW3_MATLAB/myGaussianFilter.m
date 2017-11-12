@@ -10,7 +10,8 @@ filter = ones(height, width);
 
 for i = -fix(height/2) : 1 : fix(height/2)
     for j = -fix(width/2) : 1 : fix(width/2)
-        filter(i + ceil(height/2),j + ceil(width/2)) = exp(-(i^2 + j^2)/(2 * sigma^2)); % +ceil(height/2) because matrix start from 1
+        filter(i + ceil(height/2),j + ceil(width/2)) = exp(-(i^2 + j^2)/(2 * sigma^2));
+        % +ceil(height/2) because matrix start from 1
     end
 end
 
