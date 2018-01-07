@@ -1,0 +1,37 @@
+function [E,S] = mySeamCarve_H(EMap)
+%find the vertical seam with lowest energy
+%return: E: the energy of the choosen seam, S: the choosen seam
+
+% find the lowest energy seam from bottom row, then move to the three pixels
+% above and find the next lowest energy pixel. The seam will be a list of
+% the number of pixel from bottom to top.
+
+[m,n] = size(EMap);
+S = [];
+E = [];
+
+for i = m:-1:1
+    if i == m
+        [E_new, S_new] = min(EMap(i,:)); % find lowest enery pixel and its index of last row
+        E = E_new; % update E, the energy of the seam with current pixel value
+        S = S_new; % update S, the index of the seam with current pixel index
+        SeamIndex = S_new;
+    else
+        % make sure upper 3 pixles within the boundary
+        if SeamIndex == 1
+            candidates = [EMap(i,S_new),EMap(i,S_new+1)];
+            [E_new, S_new] = min(candidates); 
+        elseif SeamIndex == n
+            candidates = [EMap(i,S_new-1),EMap(i,S_new),EMap(i,S_new+1)];
+            [E_new, S_new] = min(candidates); 
+        else
+            candidates = [EMap(i,S_new-1),EMap(i,S_new),];
+            [E_new, S_new] = min(candidates); 
+        
+        E = [E, E_new];
+        S = [S, S_new];
+        SeamIndex = S_new; 
+    end
+end
+
+    
