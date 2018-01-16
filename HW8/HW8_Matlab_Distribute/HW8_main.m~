@@ -1,0 +1,22 @@
+clear,
+close all
+clc
+%% load the image and calculate the energy map
+img = imread('zhenyu.jpg');
+Img_d = double(img)/255;
+EMap = myEnergyFunc(Img_d);
+figure,
+imshow(EMap)
+title('Energy Map')
+
+%% resize the image
+[m,n,z] = size(img);
+if m > n
+    rC = m-n
+
+rC = 100;
+rR = 10;
+
+rImg = mySeamCarveResize(Img_d,rC,rR);
+figure,
+imshow(rImg)
